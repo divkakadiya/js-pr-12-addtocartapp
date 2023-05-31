@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>onlinecart</title>
+    <link rel="icon" href="itemimages/fastrack.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="text-center mt-3">Your Order Details</h1>
+        <a href="index.html" class="btn  mb-3 btn-primary">Home</a>
+        <table class="table table-striped">
+            <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th>Action</th>
+            </tr>
+
+            <tbody id="record"></tbody>
+        </table>
+
+        <div>
+            <h3 class="btn btn-success btn-lg w-100" id="total">Total :- </h3>
+        </div>
+    </div>
+</body>
+
+</html>
+
+<script type="text/javascript">
+    viewCart = () => {
+        let val = JSON.parse(localStorage.getItem('cartItem'))
+        let tbl = ''
+        let sum = 0
+
+        val.map((v) => {
+            sum = sum + v.productPrice * v.quantity
+            tbl += `
+                <tr>
+                    <td><img src='${v.productImg}' style='height:25vh;width:30vh'/></td>    
+                    <td>${v.productName}</td>
+                    <td>${'$'}${v.productPrice}</td>
+                    <td><input type='number' id='qty${v.productId}' value='${v.quantity}'></td>
+                    <td>${'$'}${v.productPrice * v.quantity}</td>
+                    <td>
+                        <button onclick='editCart(${v.productId})' class='btn btn-sm btn-success'>Edit</button>
+                        <button onclick='deleteData(${v.productId})' class=' btn btn-sm btn-danger'>Delete</button>    
+                    </td>
+                </tr>
+            `
+        })
+        document.getElementById('record').innerHTML = tbl
+        document.getElementById('total').innerHTML = `Total :- ${'$'}` + sum
+    }
+    viewCart()
+
+    deleteData = (id) => {
+        let val = JSON.parse(localStorage.getItem('cartItem'))
+
+        let ans = val.filter((v) => {
+            return v.productId != id
+        })
+        localStorage.setItem('cartItem', JSON.stringify(ans))
+        viewCart()
+    }
+
+    editCart = (id) => {
+        let qty = document.getElementById('qty' + id).value
+
+        if (qty == 0 || qty < 0) {
+            alert('You must keep one item compulsory in the cart')
+        }
+        else {
+            let val = JSON.parse(localStorage.getItem('cartItem'))
+
+            val.map((v) => {
+                if (v.productId == id) {
+                    v.quantity = qty;
+                }
+                localStorage.setItem('cartItem', JSON.stringify(val))
+            })
+            alert('Your cart item successfully updated !')
+            viewCart()
+        }
+    }
+</script>
+
+<script src="./watchman.js"></script>
